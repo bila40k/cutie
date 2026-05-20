@@ -1,67 +1,209 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Для тебя ❤️</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Для тебя ❤️</title>
 
-    <style>
-        body{
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
-            font-family: Arial;
-            overflow: hidden;
-        }
+<style>
+    body{
+        margin:0;
+        overflow:hidden;
+        height:100vh;
+        font-family:Comic Sans MS, cursive;
+        background:black;
+        background-image:
+        radial-gradient(circle, #ff66cc 1px, transparent 1px);
+        background-size:40px 40px;
+        animation:bgmove 10s linear infinite;
+    }
 
-        .card{
-            background: white;
-            padding: 40px;
-            border-radius: 25px;
-            text-align: center;
-            box-shadow: 0 0 30px rgba(0,0,0,0.2);
-            animation: fade 1.5s ease;
-        }
+    @keyframes bgmove{
+        from{background-position:0 0;}
+        to{background-position:200px 200px;}
+    }
 
-        h1{
-            color: #ff4f81;
-            font-size: 40px;
-        }
+    .sparkle{
+        position:absolute;
+        color:white;
+        animation:fall linear infinite;
+        opacity:0.8;
+    }
 
-        p{
-            font-size: 22px;
+    @keyframes fall{
+        from{
+            transform:translateY(-100px) rotate(0deg);
         }
+        to{
+            transform:translateY(110vh) rotate(360deg);
+        }
+    }
 
-        .heart{
-            font-size: 50px;
-            animation: pulse 1s infinite;
-        }
+    .window{
+        position:absolute;
+        top:50%;
+        left:50%;
+        transform:translate(-50%,-50%);
+        width:500px;
+        background:#ffd6f5;
+        border:5px solid hotpink;
+        border-radius:20px;
+        box-shadow:
+        0 0 20px hotpink,
+        0 0 50px deeppink;
+        animation:popup 1s ease;
+    }
 
-        @keyframes pulse{
-            0%{transform: scale(1);}
-            50%{transform: scale(1.2);}
-            100%{transform: scale(1);}
+    @keyframes popup{
+        0%{
+            transform:translate(-50%,-50%) scale(0);
         }
+        100%{
+            transform:translate(-50%,-50%) scale(1);
+        }
+    }
 
-        @keyframes fade{
-            from{opacity:0; transform: translateY(20px);}
-            to{opacity:1; transform: translateY(0);}
+    .topbar{
+        background:linear-gradient(to right,#ff00aa,#ff66cc);
+        padding:10px;
+        color:white;
+        font-weight:bold;
+        border-radius:14px 14px 0 0;
+        text-shadow:0 0 5px white;
+    }
+
+    .content{
+        padding:30px;
+        text-align:center;
+        color:#ff1493;
+    }
+
+    h1{
+        font-size:42px;
+        margin:10px 0;
+        animation:glow 1s infinite alternate;
+    }
+
+    @keyframes glow{
+        from{
+            text-shadow:0 0 10px white;
         }
-    </style>
+        to{
+            text-shadow:0 0 25px hotpink;
+        }
+    }
+
+    p{
+        font-size:24px;
+        color:#cc0077;
+    }
+
+    .heart{
+        font-size:80px;
+        animation:bounce 1s infinite;
+    }
+
+    @keyframes bounce{
+        0%,100%{
+            transform:translateY(0);
+        }
+        50%{
+            transform:translateY(-15px);
+        }
+    }
+
+    button{
+        margin-top:20px;
+        background:hotpink;
+        color:white;
+        border:none;
+        padding:15px 30px;
+        font-size:20px;
+        border-radius:15px;
+        cursor:pointer;
+        box-shadow:0 0 15px hotpink;
+        transition:0.3s;
+    }
+
+    button:hover{
+        transform:scale(1.1);
+        background:#ff1493;
+    }
+
+    .marquee{
+        position:absolute;
+        bottom:0;
+        width:100%;
+        background:black;
+        color:#00ffcc;
+        font-size:22px;
+        padding:10px;
+        white-space:nowrap;
+        overflow:hidden;
+    }
+
+    .marquee span{
+        display:inline-block;
+        padding-left:100%;
+        animation:scroll 10s linear infinite;
+    }
+
+    @keyframes scroll{
+        from{
+            transform:translateX(0);
+        }
+        to{
+            transform:translateX(-100%);
+        }
+    }
+</style>
 </head>
 
 <body>
 
-<div class="card">
-    <div class="heart">❤️</div>
-    <h1>Ты милая</h1>
-    <p>
-        Просто хотел сказать,<br>
-        что ты очень красивая и приятная :)
-    </p>
+<div class="window">
+    <div class="topbar">
+        ✨ secret_message.exe ✨
+    </div>
+
+    <div class="content">
+        <div class="heart">💖</div>
+
+        <h1>Ты милая</h1>
+
+        <p>
+            Я просто хотел сказать,<br>
+            что ты очень красивая :)
+        </p>
+
+        <button onclick="love()">Нажми сюда</button>
+    </div>
 </div>
+
+<div class="marquee">
+    <span>★ ты самая милая ★ ты самая красивая ★ ты самая лучшая ★</span>
+</div>
+
+<script>
+    function love(){
+        alert("❤️ Мне нравится твоя улыбка ❤️");
+    }
+
+    for(let i = 0; i < 50; i++){
+
+        let star = document.createElement("div");
+
+        star.className = "sparkle";
+        star.innerHTML = ["✨","💖","⭐","💕"][Math.floor(Math.random()*4)];
+
+        star.style.left = Math.random()*100 + "vw";
+        star.style.top = Math.random()*-100 + "px";
+        star.style.fontSize = (20 + Math.random()*30) + "px";
+        star.style.animationDuration = (5 + Math.random()*10) + "s";
+
+        document.body.appendChild(star);
+    }
+</script>
 
 </body>
 </html>
