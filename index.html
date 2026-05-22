@@ -1,182 +1,118 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Heart</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>3D Heart Canvas</title>
 
 <style>
-
-body{
+html,body{
     margin:0;
+    height:100%;
     overflow:hidden;
     background:black;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    perspective:1200px;
-    font-family:Arial;
 }
 
-/* background */
-
-body::before{
-    content:"";
-    position:absolute;
-    width:200%;
-    height:200%;
-    background:
-    radial-gradient(#ff4d88 1px, transparent 1px);
-    background-size:35px 35px;
-    opacity:0.08;
-    animation:bgmove 20s linear infinite;
+canvas{
+    display:block;
 }
-
-@keyframes bgmove{
-    from{
-        transform:translate(0,0);
-    }
-    to{
-        transform:translate(-200px,-200px);
-    }
-}
-
-/* scene */
-
-.scene{
-    position:relative;
-    width:600px;
-    height:600px;
-    transform-style:preserve-3d;
-    animation:rotate3d 14s linear infinite;
-}
-
-@keyframes rotate3d{
-    0%{
-        transform:rotateX(15deg) rotateY(0deg);
-    }
-    100%{
-        transform:rotateX(15deg) rotateY(360deg);
-    }
-}
-
-/* words */
-
-.word{
-    position:absolute;
-    color:#ff9ebd;
-    font-size:15px;
-    font-weight:bold;
-    text-shadow:
-    0 0 10px #ff4d88,
-    0 0 20px #ff4d88,
-    0 0 40px #ff4d88;
-    white-space:nowrap;
-    transform-style:preserve-3d;
-}
-
-/* center glow */
-
-.center{
-    position:absolute;
-    color:white;
-    font-size:45px;
-    text-shadow:
-    0 0 20px #ff4d88,
-    0 0 40px #ff4d88;
-    z-index:10;
-}
-
-/* floating particles */
-
-.spark{
-    position:absolute;
-    color:#ff4d88;
-    opacity:0.5;
-    animation:fall linear infinite;
-}
-
-@keyframes fall{
-    from{
-        transform:translateY(-100px);
-    }
-    to{
-        transform:translateY(110vh);
-    }
-}
-
 </style>
 </head>
 
 <body>
-
-<div class="scene" id="scene">
-    <div class="center">❤️</div>
-</div>
+<canvas id="c"></canvas>
 
 <script>
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
 
-const scene = document.getElementById("scene");
+function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
 
-/*
-3D heart
-*/
+/* -------- HEART POINTS -------- */
+const points = [];
 
-for(let z = -80; z <= 80; z += 12){
+for(let z = -60; z <= 60; z += 10){
+    for(let t = 0; t < Math.PI * 2; t += 0.18){
 
-    for(let t = 0; t < Math.PI * 2; t += 0.07){
+        const x = 16 * Math.pow(Math.sin(t), 3);
 
-        let x = 16 * Math.pow(Math.sin(t),3);
-
-        let y = -(
-            13*Math.cos(t)
-            -5*Math.cos(2*t)
-            -2*Math.cos(3*t)
-            -Math.cos(4*t)
+        const y = -(
+            13 * Math.cos(t)
+            - 5 * Math.cos(2*t)
+            - 2 * Math.cos(3*t)
+            - Math.cos(4*t)
         );
 
-        let word = document.createElement("div");
-
-        word.className = "word";
-
-        word.innerText = "u cute";
-
-        word.style.left = (x * 14 + 300) + "px";
-
-        word.style.top = (y * 14 + 300) + "px";
-
-        word.style.transform = `
-            translateZ(${z}px)
-            rotateY(${t * 180/Math.PI}deg)
-        `;
-
-        scene.appendChild(word);
+        points.push({
+            x: x * 12,
+            y: y * 12,
+            z: z
+        });
     }
 }
 
-/* particles */
+/* -------- 3D ROTATION -------- */
+let angle = 0;
 
-for(let i=0;i<60;i++){
+function rotate3D(x,y,z){
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
 
-    let spark=document.createElement("div");
+    // rotate Y
+    const dx = x * cosA - z * sinA;
+    const dz = x * sinA + z * cosA;
 
-    spark.className="spark";
-
-    spark.innerHTML=
-    ["💖","✨","💕","❤️"][Math.floor(Math.random()*4)];
-
-    spark.style.left=Math.random()*100+"vw";
-
-    spark.style.fontSize=
-    (10+Math.random()*30)+"px";
-
-    spark.style.animationDuration=
-    (5+Math.random()*10)+"s";
-
-    document.body.appendChild(spark);
+    return { x: dx, y: y, z: dz };
 }
 
+/* -------- RENDER LOOP -------- */
+function draw(){
+
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    angle += 0.01;
+
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    for(const p of points){
+
+        const r = rotate3D(p.x, p.y, p.z);
+
+        const perspective = 400 / (400 - r.z);
+
+        const x2d = r.x * perspective + cx;
+        const y2d = r.y * perspective + cy;
+
+        const size = (1 - r.z / 200) * 2;
+
+        // glow effect
+        ctx.fillStyle = "#ff4d88";
+
+        ctx.shadowColor = "#ff4d88";
+        ctx.shadowBlur = 10;
+
+        ctx.beginPath();
+        ctx.arc(x2d, y2d, size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // text overlay (optional)
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = "white";
+        ctx.font = "10px Arial";
+        ctx.fillText("u cute", x2d, y2d);
+    }
+
+    requestAnimationFrame(draw);
+}
+
+draw();
 </script>
 
 </body>
