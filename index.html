@@ -3,22 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>u cute ❤️</title>
+<title>3D Heart</title>
 
 <style>
 
 body{
     margin:0;
-    background:black;
     overflow:hidden;
+    background:black;
+    height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    height:100vh;
+    perspective:1200px;
     font-family:Arial;
 }
 
-/* background glow */
+/* background */
 
 body::before{
     content:"";
@@ -27,7 +28,7 @@ body::before{
     height:200%;
     background:
     radial-gradient(#ff4d88 1px, transparent 1px);
-    background-size:30px 30px;
+    background-size:35px 35px;
     opacity:0.08;
     animation:bgmove 20s linear infinite;
 }
@@ -41,26 +42,26 @@ body::before{
     }
 }
 
-/* heart */
+/* scene */
 
-.heart-wrapper{
+.scene{
     position:relative;
-    width:500px;
-    height:500px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    animation:spin 12s linear infinite;
+    width:600px;
+    height:600px;
+    transform-style:preserve-3d;
+    animation:rotate3d 14s linear infinite;
 }
 
-@keyframes spin{
-    from{
-        transform:rotate(0deg);
+@keyframes rotate3d{
+    0%{
+        transform:rotateX(15deg) rotateY(0deg);
     }
-    to{
-        transform:rotate(360deg);
+    100%{
+        transform:rotateX(15deg) rotateY(360deg);
     }
 }
+
+/* words */
 
 .word{
     position:absolute;
@@ -68,33 +69,26 @@ body::before{
     font-size:15px;
     font-weight:bold;
     text-shadow:
-    0 0 8px #ff4d88,
-    0 0 15px #ff4d88;
+    0 0 10px #ff4d88,
+    0 0 20px #ff4d88,
+    0 0 40px #ff4d88;
     white-space:nowrap;
+    transform-style:preserve-3d;
 }
 
-/* center text */
+/* center glow */
 
 .center{
     position:absolute;
     color:white;
-    text-align:center;
+    font-size:45px;
+    text-shadow:
+    0 0 20px #ff4d88,
+    0 0 40px #ff4d88;
     z-index:10;
 }
 
-.center h1{
-    font-size:45px;
-    margin:0;
-    text-shadow:0 0 20px #ff4d88;
-}
-
-.center p{
-    color:#ffb6cf;
-    margin-top:10px;
-    font-size:18px;
-}
-
-/* particles */
+/* floating particles */
 
 .spark{
     position:absolute;
@@ -117,63 +111,70 @@ body::before{
 
 <body>
 
-<div class="heart-wrapper" id="heart"></div>
-
-<div class="center">
-    <h1>❤️</h1>
-    <p>u cute</p>
+<div class="scene" id="scene">
+    <div class="center">❤️</div>
 </div>
 
 <script>
 
-const heart = document.getElementById("heart");
+const scene = document.getElementById("scene");
 
-/* create heart from words */
+/*
+3D heart
+*/
 
-for(let t = 0; t < Math.PI * 2; t += 0.09){
+for(let z = -80; z <= 80; z += 12){
 
-    let x = 16 * Math.pow(Math.sin(t),3);
-    
-    let y = -(13*Math.cos(t)
-        -5*Math.cos(2*t)
-        -2*Math.cos(3*t)
-        -Math.cos(4*t));
+    for(let t = 0; t < Math.PI * 2; t += 0.07){
 
-    let word = document.createElement("div");
+        let x = 16 * Math.pow(Math.sin(t),3);
 
-    word.className = "word";
+        let y = -(
+            13*Math.cos(t)
+            -5*Math.cos(2*t)
+            -2*Math.cos(3*t)
+            -Math.cos(4*t)
+        );
 
-    word.innerText = "u cute";
+        let word = document.createElement("div");
 
-    word.style.left = (x * 14 + 250) + "px";
+        word.className = "word";
 
-    word.style.top = (y * 14 + 250) + "px";
+        word.innerText = "u cute";
 
-    word.style.transform =
-    `rotate(${t * 180/Math.PI}deg)`;
+        word.style.left = (x * 14 + 300) + "px";
 
-    heart.appendChild(word);
+        word.style.top = (y * 14 + 300) + "px";
+
+        word.style.transform = `
+            translateZ(${z}px)
+            rotateY(${t * 180/Math.PI}deg)
+        `;
+
+        scene.appendChild(word);
+    }
 }
 
-/* floating effects */
+/* particles */
 
-for(let i=0;i<40;i++){
+for(let i=0;i<60;i++){
 
-    let s=document.createElement("div");
+    let spark=document.createElement("div");
 
-    s.className="spark";
+    spark.className="spark";
 
-    s.innerHTML=["💖","✨","💕","❤️"][Math.floor(Math.random()*4)];
+    spark.innerHTML=
+    ["💖","✨","💕","❤️"][Math.floor(Math.random()*4)];
 
-    s.style.left=Math.random()*100+"vw";
+    spark.style.left=Math.random()*100+"vw";
 
-    s.style.fontSize=
-    (10+Math.random()*25)+"px";
+    spark.style.fontSize=
+    (10+Math.random()*30)+"px";
 
-    s.style.animationDuration=
+    spark.style.animationDuration=
     (5+Math.random()*10)+"s";
 
-    document.body.appendChild(s);
+    document.body.appendChild(spark);
 }
 
 </script>
